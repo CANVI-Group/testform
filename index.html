@@ -59,7 +59,7 @@
             backdrop-filter: blur(20px);
             border-radius: 30px;
             padding: 40px;
-            max-width: 600px;
+            max-width: 500px;
             width: 100%;
             box-shadow: 
                 0 20px 40px rgba(0, 0, 0, 0.1),
@@ -116,22 +116,112 @@
             50% { text-shadow: 0 0 50px rgba(255, 255, 255, 0.8), 0 0 100px rgba(255, 255, 255, 0.3); }
         }
 
-        .iframe-wrapper {
+        .input-group {
+            margin-bottom: 30px;
             position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
 
-        .cosmic-iframe {
+        .input-wrapper {
+            position: relative;
+            overflow: visible;
+            border-radius: 15px;
+            margin-top: 15px;
+        }
+
+        .input-field {
             width: 100%;
-            height: 700px;
+            padding: 20px 25px;
             border: none;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            color: white;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .input-field:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .input-label {
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: #333;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 4px 12px;
             border-radius: 20px;
-            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .name-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3);
+            background-size: 300% 300%;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: buttonGradient 4s ease infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes buttonGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(255, 255, 255, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
         }
 
         .floating-elements {
@@ -200,17 +290,113 @@
             }
         }
 
-        .loading-message {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 14px;
-            margin-top: 10px;
-            animation: pulse 2s infinite;
+        .input-field:focus + .input-label {
+            animation: labelBounce 0.6s ease;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3);
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
+        @keyframes labelBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .magic-border {
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            border-radius: 17px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .input-field:focus ~ .magic-border {
+            opacity: 1;
+        }
+
+        .success-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .success-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            animation: successPop 0.6s ease;
+        }
+
+        @keyframes successPop {
+            0% { transform: scale(0) rotate(0deg); opacity: 0; }
+            100% { transform: scale(1) rotate(360deg); opacity: 1; }
+        }
+
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #4ecdc4;
+            margin: 0 auto 20px;
+            position: relative;
+            animation: checkmarkScale 0.8s ease;
+        }
+
+        @keyframes checkmarkScale {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .checkmark::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        /* Error message styles */
+        .error-message {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 5px;
+            padding: 5px 10px;
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 5px;
+            border-left: 3px solid #ff6b6b;
+            animation: errorShake 0.5s ease;
+        }
+
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Confetti animation */
+        @keyframes confettiFall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
         }
 
         @media (max-width: 768px) {
@@ -219,12 +405,13 @@
                 margin: 10px;
             }
             
-            .form-title {
-                font-size: 2rem;
+            .name-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
             }
             
-            .cosmic-iframe {
-                height: 600px;
+            .form-title {
+                font-size: 2rem;
             }
         }
     </style>
@@ -240,21 +427,211 @@
         <div class="form-content">
             <h1 class="form-title">✨ Cosmic Contact ✨</h1>
             
-            <div class="iframe-wrapper">
-                <iframe 
-                    src="https://forms.canvigroup.com/canvigroup131/form/Test1/formperma/-N2i7qNxTtDjhu0-ZWtneOYCYTULqj6hQmzo0UZjB-w"
-                    class="cosmic-iframe"
-                    onload="hideLoading()"
-                    onerror="showError()">
-                </iframe>
-                <div id="loadingMessage" class="loading-message">
-                    🚀 Loading cosmic form...
+            <!-- Custom form with validation that redirects to Zoho -->
+            <form name="form" 
+                  id="cosmicForm" 
+                  onsubmit="return zf_ValidateAndSubmit()">
+                
+                <div class="input-group">
+                    <div class="name-row">
+                        <div class="input-wrapper">
+                            <input type="text" 
+                                   class="input-field" 
+                                   id="Name_First" 
+                                   name="Name_First" 
+                                   placeholder="Enter your first name" 
+                                   required>
+                            <label class="input-label" for="Name_First">First Name</label>
+                            <div class="magic-border"></div>
+                            <div id="Name_error" class="error-message" style="display:none;">
+                                Please enter your first name
+                            </div>
+                        </div>
+                        
+                        <div class="input-wrapper">
+                            <input type="text" 
+                                   class="input-field" 
+                                   id="Name_Last" 
+                                   name="Name_Last" 
+                                   placeholder="Enter your last name" 
+                                   required>
+                            <label class="input-label" for="Name_Last">Last Name</label>
+                            <div class="magic-border"></div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <input type="email" 
+                               class="input-field" 
+                               id="Email" 
+                               name="Email" 
+                               placeholder="Enter your cosmic email" 
+                               checktype="c5"
+                               required>
+                        <label class="input-label" for="Email">Email Address</label>
+                        <div class="magic-border"></div>
+                        <div id="Email_error" class="error-message" style="display:none;">
+                            Please enter a valid email address
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    🚀 Launch Into Space 🚀
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="success-animation" id="successAnimation">
+        <div class="success-content">
+            <div class="checkmark"></div>
+            <h2 style="color: #333; margin-bottom: 10px;">Mission Successful! 🎉</h2>
+            <p style="color: #666;">Your data has been launched into the cosmos!</p>
+            <p style="color: #999; font-size: 14px; margin-top: 10px;">Thank you for your submission</p>
         </div>
     </div>
 
     <script>
+        // Complete validation.js integration
+        var zf_MandArray = ["Name_First", "Name_Last", "Email"];
+        var zf_FieldArray = ["Name_First", "Name_Last", "Email"];
+        var zf_DateRegex = new RegExp("^(([0][1-9])|([1-2][0-9])|([3][0-1]))[-](Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[-](?:(?:19|20)[0-9]{2})$");
+        var zf_MonthYearRegex = new RegExp("^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[-](?:(?:19|20)[0-9]{2})$");
+        var isSalesIQIntegrationEnabled = false;
+
+        // Your complete validation.js functions
+        function zf_ValidateAndSubmit(){
+            if(zf_CheckMandatory()){
+                if(zf_ValidCheck()){
+                    // If validation passes, redirect to Zoho form with pre-filled data
+                    submitToZohoForm();
+                    return false; // Prevent default form submission
+                }else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        }
+
+        function zf_CheckMandatory(){
+            for(i = 0 ; i < zf_MandArray.length ; i ++) {
+                var fieldObj=document.forms.form[zf_MandArray[i]];
+                if(fieldObj) {
+                    if(fieldObj.nodeName != null ){
+                        if (((fieldObj.value).replace(/^\s+|\s+$/g, '')).length==0) {
+                            fieldObj.focus();
+                            zf_ShowErrorMsg(zf_MandArray[i]);
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        function zf_ValidCheck(){
+            var isValid = true;
+            for(ind = 0 ; ind < zf_FieldArray.length ; ind++ ) {
+                var fieldObj=document.forms.form[zf_FieldArray[ind]];
+                if(fieldObj) {
+                    if(fieldObj.nodeName != null ){
+                        var checkType = fieldObj.getAttribute("checktype");
+                        if( checkType == "c5" ){
+                            if (!zf_ValidateEmailID(fieldObj)) {
+                                isValid = false;
+                                fieldObj.focus();
+                                zf_ShowErrorMsg(zf_FieldArray[ind]);
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            return isValid;
+        }
+
+        function zf_ShowErrorMsg(uniqName){
+            // Hide all error messages first
+            var errorElements = document.querySelectorAll('.error-message');
+            errorElements.forEach(function(elem) {
+                elem.style.display = 'none';
+            });
+            
+            // Show specific error message
+            var linkName = uniqName.split('_')[0];
+            var errorElement = document.getElementById(linkName + "_error");
+            if (errorElement) {
+                errorElement.style.display = 'block';
+            }
+        }
+
+        function zf_ValidateEmailID(elem) {
+            var check = 0;
+            var emailValue = elem.value;
+            if (emailValue != null && !emailValue == "") {
+                var emailArray = emailValue.split(",");
+                for (i = 0; i < emailArray.length; i++) {
+                    var emailExp = /^[\w]([\w\-.+&'/]*)@([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,22}$/;
+                    if (!emailExp.test(emailArray[i].replace(/^\s+|\s+$/g, ''))) {
+                        check = 1;
+                    }
+                }
+                if (check == 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        }
+
+        // Submit to Zoho form with cosmic effects
+        function submitToZohoForm() {
+            const submitBtn = document.querySelector('.submit-btn');
+            
+            // Visual feedback
+            submitBtn.style.transform = 'scale(0.95)';
+            submitBtn.innerHTML = '🌟 Launching... 🌟';
+            submitBtn.disabled = true;
+            
+            // Create confetti effect
+            createConfetti();
+            
+            // Get form data
+            const firstName = document.getElementById('Name_First').value;
+            const lastName = document.getElementById('Name_Last').value;
+            const email = document.getElementById('Email').value;
+            
+            // Build Zoho form URL with pre-filled data
+            const zohoFormUrl = `https://forms.canvigroup.com/canvigroup131/form/Test1/formperma/-N2i7qNxTtDjhu0-ZWtneOYCYTULqj6hQmzo0UZjB-w?Name_First=${encodeURIComponent(firstName)}&Name_Last=${encodeURIComponent(lastName)}&Email=${encodeURIComponent(email)}`;
+            
+            setTimeout(() => {
+                // Show success animation
+                showSuccessAnimation();
+                
+                // Open Zoho form in new tab with pre-filled data
+                window.open(zohoFormUrl, '_blank');
+                
+                // Reset form
+                setTimeout(() => {
+                    document.getElementById('cosmicForm').reset();
+                    submitBtn.innerHTML = '🚀 Launch Into Space 🚀';
+                    submitBtn.style.transform = 'scale(1)';
+                    submitBtn.disabled = false;
+                    
+                    // Reset input backgrounds
+                    document.querySelectorAll('.input-field').forEach(input => {
+                        input.style.background = 'rgba(255, 255, 255, 0.1)';
+                    });
+                }, 4000);
+            }, 1000);
+        }
+
         // Create cosmic background stars
         function createStars() {
             const cosmicBg = document.getElementById('cosmicBg');
@@ -298,30 +675,75 @@
             }
         }
 
-        // Hide loading message when iframe loads
-        function hideLoading() {
-            const loading = document.getElementById('loadingMessage');
-            if (loading) {
-                loading.style.display = 'none';
+        // Input field interactions
+        function setupInputInteractions() {
+            document.querySelectorAll('.input-field').forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                    this.parentElement.style.boxShadow = '0 15px 35px rgba(255, 255, 255, 0.2)';
+                });
+
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                    this.parentElement.style.boxShadow = 'none';
+                });
+
+                input.addEventListener('input', function() {
+                    if (this.value.length > 0) {
+                        this.style.background = 'rgba(255, 255, 255, 0.2)';
+                        this.style.color = '#fff';
+                    } else {
+                        this.style.background = 'rgba(255, 255, 255, 0.1)';
+                    }
+                });
+            });
+        }
+
+        // Show success animation
+        function showSuccessAnimation() {
+            const successAnimation = document.getElementById('successAnimation');
+            successAnimation.style.display = 'flex';
+            
+            setTimeout(() => {
+                successAnimation.style.display = 'none';
+            }, 4000);
+        }
+
+        // Create confetti effect
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-10px';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = '50%';
+                confetti.style.pointerEvents = 'none';
+                confetti.style.zIndex = '10001';
+                confetti.style.animation = `confettiFall ${Math.random() * 3 + 2}s linear forwards`;
+                
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => {
+                    if (document.body.contains(confetti)) {
+                        document.body.removeChild(confetti);
+                    }
+                }, 5000);
             }
         }
 
-        // Show error if iframe fails to load
-        function showError() {
-            const loading = document.getElementById('loadingMessage');
-            if (loading) {
-                loading.innerHTML = '❌ Form temporarily unavailable. <a href="https://forms.canvigroup.com/canvigroup131/form/Test1/formperma/-N2i7qNxTtDjhu0-ZWtneOYCYTULqj6hQmzo0UZjB-w" target="_blank" style="color: #4ecdc4;">Click here to open form</a>';
-                loading.style.color = '#ff6b6b';
-            }
-        }
-
-        // Initialize all effects
+        // Initialize all effects and interactions
         function initializeCosmicForm() {
             createStars();
             createFloatingElements();
             createParticles();
+            setupInputInteractions();
             
-            console.log('🚀 Cosmic Form initialized successfully!');
+            console.log('🚀 Cosmic Form with validation initialized successfully!');
         }
 
         // Initialize when DOM is loaded
@@ -330,11 +752,6 @@
         } else {
             initializeCosmicForm();
         }
-
-        // Auto-hide loading message after 5 seconds
-        setTimeout(() => {
-            hideLoading();
-        }, 5000);
     </script>
 </body>
 </html>
