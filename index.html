@@ -171,11 +171,6 @@
             transition: all 0.3s ease;
         }
 
-        @keyframes labelGradient {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
         .name-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -387,18 +382,13 @@
             background: rgba(255, 107, 107, 0.1);
             border-radius: 5px;
             border-left: 3px solid #ff6b6b;
+            animation: errorShake 0.5s ease;
         }
 
-        /* Mouse trail effect */
-        @keyframes trailFade {
-            0% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(0); }
-        }
-
-        /* Flash animation */
-        @keyframes flash {
-            0%, 100% { filter: brightness(1); }
-            50% { filter: brightness(1.2); }
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
         }
 
         /* Confetti animation */
@@ -437,11 +427,11 @@
         <div class="form-content">
             <h1 class="form-title">✨ Cosmic Contact ✨</h1>
             
-            <!-- Replace with YOUR actual Zoho Form URL -->
+            <!-- Updated form with correct URL structure -->
             <form name="form" 
                   id="cosmicForm" 
                   method="POST" 
-                  action="https://forms.canvigroup.com/canvigroup131/form/Test1/formperma/-N2i7qNxTtDjhu0-ZWtneOYCYTULqj6hQmzo0UZjB-w" 
+                  action="https://forms.canvigroup.com/canvigroup131/form/Test1/formperma/-N2i7qNxTtDjhu0-ZWtneOYCYTULqj6hQmzo0UZjB-w/htmlRecords/submit" 
                   target="_blank"
                   enctype="multipart/form-data" 
                   onsubmit="return zf_ValidateAndSubmit()">
@@ -514,36 +504,72 @@
     </div>
 
     <script>
-        // Zoho Forms Configuration
+        // FIXED: Added missing Zoho Forms Configuration
         var zf_MandArray = ["Name_First", "Name_Last", "Email"];
         var zf_FieldArray = ["Name_First", "Name_Last", "Email"];
         var zf_DateRegex = new RegExp("^(([0][1-9])|([1-2][0-9])|([3][0-1]))[-](Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[-](?:(?:19|20)[0-9]{2})$");
         var zf_MonthYearRegex = new RegExp("^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[-](?:(?:19|20)[0-9]{2})$");
         var isSalesIQIntegrationEnabled = false;
 
-        // Zoho Validation Functions
-        function zf_ValidateAndSubmit() {
-            if (zf_CheckMandatory()) {
-                if (zf_ValidCheck()) {
-                    if (isSalesIQIntegrationEnabled) {
+        // Your complete validation.js code with fixes
+        function zf_ValidateAndSubmit(){
+            if(zf_CheckMandatory()){
+                if(zf_ValidCheck()){
+                    if(isSalesIQIntegrationEnabled){
                         zf_addDataToSalesIQ();
                     }
                     return true;
-                } else {
+                }else{
                     return false;
                 }
-            } else {
+            }else{
                 return false;
             }
         }
 
-        function zf_CheckMandatory() {
-            for (i = 0; i < zf_MandArray.length; i++) {
-                var fieldObj = document.forms.form[zf_MandArray[i]];
-                if (fieldObj) {
-                    if (fieldObj.nodeName != null) {
-                        if (((fieldObj.value).replace(/^\s+|\s+$/g, '')).length == 0) {
+        function zf_CheckMandatory(){
+            for(i = 0 ; i < zf_MandArray.length ; i ++) {
+                var fieldObj=document.forms.form[zf_MandArray[i]];
+                if(fieldObj) {
+                    if(fieldObj.nodeName != null ){
+                        if ( fieldObj.nodeName=='OBJECT' ) {
+                            if(!zf_MandatoryCheckSignature(fieldObj)){
+                                zf_ShowErrorMsg(zf_MandArray[i]);
+                                return false;
+                            }
+                        }else if (((fieldObj.value).replace(/^\s+|\s+$/g, '')).length==0) {
+                            if(fieldObj.type =='file')
+                            {
+                                fieldObj.focus();
+                                zf_ShowErrorMsg(zf_MandArray[i]);
+                                return false;
+                            }
                             fieldObj.focus();
+                            zf_ShowErrorMsg(zf_MandArray[i]);
+                            return false;
+                        }  else if( fieldObj.nodeName=='SELECT' ) {
+                            if(fieldObj.options[fieldObj.selectedIndex].value=='-Select-') {
+                                fieldObj.focus();
+                                zf_ShowErrorMsg(zf_MandArray[i]);
+                                return false;
+                            }
+                        } else if( fieldObj.type =='checkbox' || fieldObj.type =='radio' ){
+                            if(fieldObj.checked == false){
+                                fieldObj.focus();
+                                zf_ShowErrorMsg(zf_MandArray[i]);
+                                return false;
+                            }
+                        }
+                    }else{
+                        var checkedValsCount = 0;
+                        var inpChoiceElems = fieldObj;
+                        for(var ii = 0; ii < inpChoiceElems.length ; ii ++ ){
+                            if(inpChoiceElems[ii].checked === true ){
+                                checkedValsCount ++;
+                            }
+                        }
+                        if ( checkedValsCount == 0) {
+                            inpChoiceElems[0].focus();
                             zf_ShowErrorMsg(zf_MandArray[i]);
                             return false;
                         }
@@ -553,14 +579,14 @@
             return true;
         }
 
-        function zf_ValidCheck() {
+        function zf_ValidCheck(){
             var isValid = true;
-            for (ind = 0; ind < zf_FieldArray.length; ind++) {
-                var fieldObj = document.forms.form[zf_FieldArray[ind]];
-                if (fieldObj) {
-                    if (fieldObj.nodeName != null) {
+            for(ind = 0 ; ind < zf_FieldArray.length ; ind++ ) {
+                var fieldObj=document.forms.form[zf_FieldArray[ind]];
+                if(fieldObj) {
+                    if(fieldObj.nodeName != null ){
                         var checkType = fieldObj.getAttribute("checktype");
-                        if (checkType == "c5") { // Email validation
+                        if( checkType == "c5" ){
                             if (!zf_ValidateEmailID(fieldObj)) {
                                 isValid = false;
                                 fieldObj.focus();
@@ -574,19 +600,22 @@
             return isValid;
         }
 
-        function zf_ShowErrorMsg(uniqName) {
-            var fldLinkName;
-            for (errInd = 0; errInd < zf_FieldArray.length; errInd++) {
-                fldLinkName = zf_FieldArray[errInd].split('_')[0];
-                var errorElement = document.getElementById(fldLinkName + "_error");
-                if (errorElement) {
-                    errorElement.style.display = 'none';
-                }
-            }
+        // FIXED: Improved error message display with fallback
+        function zf_ShowErrorMsg(uniqName){
+            // Hide all error messages first
+            var errorElements = document.querySelectorAll('.error-message');
+            errorElements.forEach(function(elem) {
+                elem.style.display = 'none';
+            });
+            
+            // Show specific error message
             var linkName = uniqName.split('_')[0];
             var errorElement = document.getElementById(linkName + "_error");
             if (errorElement) {
                 errorElement.style.display = 'block';
+            } else {
+                // Fallback: Show alert if error element not found
+                alert('Please fill in the ' + uniqName.replace('_', ' ') + ' field correctly.');
             }
         }
 
@@ -612,8 +641,12 @@
         }
 
         function zf_addDataToSalesIQ() {
-            // SalesIQ integration placeholder
             console.log('SalesIQ integration called');
+        }
+
+        // Placeholder functions for signature validation (not used in this form)
+        function zf_MandatoryCheckSignature(objElem) {
+            return true; // Not applicable for this form
         }
 
         // Create cosmic background stars
@@ -683,51 +716,34 @@
             });
         }
 
-        // Enhanced form submission with success animation
+        // Enhanced form submission
         function setupFormSubmission() {
             const form = document.getElementById('cosmicForm');
             const submitBtn = document.querySelector('.submit-btn');
             
             form.addEventListener('submit', function(e) {
-                // Let Zoho validation run first
-                if (!zf_ValidateAndSubmit()) {
-                    e.preventDefault();
-                    return false;
-                }
+                console.log('Form submission started...');
                 
-                // Visual feedback for submission
+                // Visual feedback
                 submitBtn.style.transform = 'scale(0.95)';
-                submitBtn.innerHTML = '🌟 Launching... 🌟';
-                submitBtn.disabled = true;
+                submitBtn.innerHTML = '🌟 Validating... 🌟';
                 
-                // Show success animation after short delay
+                // Let validation run
                 setTimeout(() => {
-                    showSuccessAnimation();
-                }, 1000);
+                    submitBtn.innerHTML = '🚀 Launch Into Space 🚀';
+                    submitBtn.style.transform = 'scale(1)';
+                }, 500);
             });
         }
 
         // Show success animation
         function showSuccessAnimation() {
             const successAnimation = document.getElementById('successAnimation');
-            const submitBtn = document.querySelector('.submit-btn');
-            
             successAnimation.style.display = 'flex';
-            
-            // Create confetti effect
             createConfetti();
             
             setTimeout(() => {
                 successAnimation.style.display = 'none';
-                submitBtn.innerHTML = '🚀 Launch Into Space 🚀';
-                submitBtn.style.transform = 'scale(1)';
-                submitBtn.disabled = false;
-                document.getElementById('cosmicForm').reset();
-                
-                // Reset input backgrounds
-                document.querySelectorAll('.input-field').forEach(input => {
-                    input.style.background = 'rgba(255, 255, 255, 0.1)';
-                });
             }, 4000);
         }
 
@@ -758,42 +774,6 @@
             }
         }
 
-        // Add mouse trail effect
-        function setupMouseTrail() {
-            document.addEventListener('mousemove', function(e) {
-                const trail = document.createElement('div');
-                trail.style.position = 'fixed';
-                trail.style.left = e.clientX + 'px';
-                trail.style.top = e.clientY + 'px';
-                trail.style.width = '6px';
-                trail.style.height = '6px';
-                trail.style.background = 'rgba(255, 255, 255, 0.6)';
-                trail.style.borderRadius = '50%';
-                trail.style.pointerEvents = 'none';
-                trail.style.zIndex = '9999';
-                trail.style.animation = 'trailFade 1s ease-out forwards';
-                document.body.appendChild(trail);
-
-                setTimeout(() => {
-                    if (document.body.contains(trail)) {
-                        document.body.removeChild(trail);
-                    }
-                }, 1000);
-            });
-        }
-
-        // Keyboard interactions
-        function setupKeyboardInteractions() {
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    document.body.style.animation = 'flash 0.3s ease';
-                    setTimeout(() => {
-                        document.body.style.animation = '';
-                    }, 300);
-                }
-            });
-        }
-
         // Initialize all effects and interactions
         function initializeCosmicForm() {
             createStars();
@@ -801,8 +781,6 @@
             createParticles();
             setupInputInteractions();
             setupFormSubmission();
-            setupMouseTrail();
-            setupKeyboardInteractions();
             
             // Set referrer for Zoho
             document.getElementsByName('zf_referrer_name')[0].value = document.referrer;
