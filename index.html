@@ -399,6 +399,11 @@
             }
         }
 
+        /* Hidden form for Zoho submission */
+        .hidden-form {
+            display: none;
+        }
+
         @media (max-width: 768px) {
             .form-container {
                 padding: 20px;
@@ -427,7 +432,7 @@
         <div class="form-content">
             <h1 class="form-title">✨ Cosmic Contact ✨</h1>
             
-            <!-- Custom form with validation that redirects to Zoho -->
+            <!-- Visible cosmic form for user interaction -->
             <form name="form" 
                   id="cosmicForm" 
                   onsubmit="return zf_ValidateAndSubmit()">
@@ -482,6 +487,25 @@
                     🚀 Launch Into Space 🚀
                 </button>
             </form>
+
+            <!-- Hidden form that actually submits to Zoho -->
+            <form id="hiddenZohoForm" 
+                  class="hidden-form"
+                  method="POST" 
+                  action="https://forms.canvigroup.com/canvigroup131/form/Test1/formperma/-N2i7qNxTtDjhu0-ZWtneOYCYTULqj6hQmzo0UZjB-w/htmlRecords/submit" 
+                  target="hiddenIframe"
+                  enctype="multipart/form-data">
+                
+                <input type="hidden" name="zf_referrer_name" value="">
+                <input type="hidden" name="zf_redirect_url" value="">
+                <input type="hidden" name="zc_gad" value="">
+                <input type="hidden" name="Name_First" id="hidden_Name_First">
+                <input type="hidden" name="Name_Last" id="hidden_Name_Last">
+                <input type="hidden" name="Email" id="hidden_Email">
+            </form>
+
+            <!-- Hidden iframe to catch the submission response -->
+            <iframe name="hiddenIframe" class="hidden-form"></iframe>
         </div>
     </div>
 
@@ -490,7 +514,7 @@
             <div class="checkmark"></div>
             <h2 style="color: #333; margin-bottom: 10px;">Mission Successful! 🎉</h2>
             <p style="color: #666;">Your data has been launched into the cosmos!</p>
-            <p style="color: #999; font-size: 14px; margin-top: 10px;">Thank you for your submission</p>
+            <p style="color: #999; font-size: 14px; margin-top: 10px;">Form submitted successfully to Zoho</p>
         </div>
     </div>
 
@@ -506,8 +530,8 @@
         function zf_ValidateAndSubmit(){
             if(zf_CheckMandatory()){
                 if(zf_ValidCheck()){
-                    // If validation passes, redirect to Zoho form with pre-filled data
-                    submitToZohoForm();
+                    // If validation passes, submit directly to Zoho
+                    submitToZohoDirectly();
                     return false; // Prevent default form submission
                 }else{
                     return false;
@@ -590,13 +614,13 @@
             }
         }
 
-        // Submit to Zoho form with cosmic effects
-        function submitToZohoForm() {
+        // Submit directly to Zoho backend
+        function submitToZohoDirectly() {
             const submitBtn = document.querySelector('.submit-btn');
             
             // Visual feedback
             submitBtn.style.transform = 'scale(0.95)';
-            submitBtn.innerHTML = '🌟 Launching... 🌟';
+            submitBtn.innerHTML = '🌟 Submitting to Cosmos... 🌟';
             submitBtn.disabled = true;
             
             // Create confetti effect
@@ -607,17 +631,23 @@
             const lastName = document.getElementById('Name_Last').value;
             const email = document.getElementById('Email').value;
             
-            // Build Zoho form URL with pre-filled data
-            const zohoFormUrl = `https://forms.canvigroup.com/canvigroup131/form/Test1/formperma/-N2i7qNxTtDjhu0-ZWtneOYCYTULqj6hQmzo0UZjB-w?Name_First=${encodeURIComponent(firstName)}&Name_Last=${encodeURIComponent(lastName)}&Email=${encodeURIComponent(email)}`;
+            // Populate hidden form
+            document.getElementById('hidden_Name_First').value = firstName;
+            document.getElementById('hidden_Name_Last').value = lastName;
+            document.getElementById('hidden_Email').value = email;
             
+            // Set referrer
+            document.getElementsByName('zf_referrer_name')[0].value = document.referrer;
+            
+            // Submit hidden form to Zoho
+            document.getElementById('hiddenZohoForm').submit();
+            
+            // Show success animation immediately
             setTimeout(() => {
-                // Show success animation
+                submitBtn.innerHTML = '✅ Submitted Successfully! ✅';
                 showSuccessAnimation();
                 
-                // Open Zoho form in new tab with pre-filled data
-                window.open(zohoFormUrl, '_blank');
-                
-                // Reset form
+                // Reset form after success
                 setTimeout(() => {
                     document.getElementById('cosmicForm').reset();
                     submitBtn.innerHTML = '🚀 Launch Into Space 🚀';
@@ -743,7 +773,7 @@
             createParticles();
             setupInputInteractions();
             
-            console.log('🚀 Cosmic Form with validation initialized successfully!');
+            console.log('🚀 Cosmic Form with auto-submit initialized successfully!');
         }
 
         // Initialize when DOM is loaded
