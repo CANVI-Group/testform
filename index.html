@@ -373,7 +373,6 @@
             font-weight: bold;
         }
 
-        /* Error message styles */
         .error-message {
             color: #ff6b6b;
             font-size: 12px;
@@ -391,17 +390,11 @@
             75% { transform: translateX(5px); }
         }
 
-        /* Confetti animation */
         @keyframes confettiFall {
             to {
                 transform: translateY(100vh) rotate(720deg);
                 opacity: 0;
             }
-        }
-
-        /* Hidden form for Zoho submission */
-        .hidden-form {
-            display: none;
         }
 
         @media (max-width: 768px) {
@@ -423,20 +416,14 @@
 </head>
 <body>
     <div class="cosmic-background" id="cosmicBg"></div>
-    
     <div class="floating-elements" id="floatingElements"></div>
-    
     <div class="particles" id="particles"></div>
 
     <div class="form-container">
         <div class="form-content">
             <h1 class="form-title">✨ Cosmic Contact ✨</h1>
             
-            <!-- Visible cosmic form for user interaction -->
-            <form name="form" 
-                  id="cosmicForm" 
-                  onsubmit="return zf_ValidateAndSubmit()">
-                
+            <form name="form" id="cosmicForm" onsubmit="return zf_ValidateAndSubmit()">
                 <div class="input-group">
                     <div class="name-row">
                         <div class="input-wrapper">
@@ -487,25 +474,6 @@
                     🚀 Launch Into Space 🚀
                 </button>
             </form>
-
-            <!-- Hidden form that actually submits to Zoho -->
-            <form id="hiddenZohoForm" 
-                  class="hidden-form"
-                  method="POST" 
-                  action="https://forms.canvigroup.com/canvigroup131/form/Test1/formperma/-N2i7qNxTtDjhu0-ZWtneOYCYTULqj6hQmzo0UZjB-w/htmlRecords/submit" 
-                  target="hiddenIframe"
-                  enctype="multipart/form-data">
-                
-                <input type="hidden" name="zf_referrer_name" value="">
-                <input type="hidden" name="zf_redirect_url" value="">
-                <input type="hidden" name="zc_gad" value="">
-                <input type="hidden" name="Name_First" id="hidden_Name_First">
-                <input type="hidden" name="Name_Last" id="hidden_Name_Last">
-                <input type="hidden" name="Email" id="hidden_Email">
-            </form>
-
-            <!-- Hidden iframe to catch the submission response -->
-            <iframe name="hiddenIframe" class="hidden-form"></iframe>
         </div>
     </div>
 
@@ -518,21 +486,21 @@
         </div>
     </div>
 
+    <iframe name="hiddenIframe" style="display:none;"></iframe>
+
     <script>
-        // Complete validation.js integration
+        // Validation configuration
         var zf_MandArray = ["Name_First", "Name_Last", "Email"];
         var zf_FieldArray = ["Name_First", "Name_Last", "Email"];
         var zf_DateRegex = new RegExp("^(([0][1-9])|([1-2][0-9])|([3][0-1]))[-](Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[-](?:(?:19|20)[0-9]{2})$");
         var zf_MonthYearRegex = new RegExp("^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[-](?:(?:19|20)[0-9]{2})$");
         var isSalesIQIntegrationEnabled = false;
 
-        // Your complete validation.js functions
         function zf_ValidateAndSubmit(){
             if(zf_CheckMandatory()){
                 if(zf_ValidCheck()){
-                    // If validation passes, submit directly to Zoho
                     submitToZohoDirectly();
-                    return false; // Prevent default form submission
+                    return false;
                 }else{
                     return false;
                 }
@@ -579,13 +547,11 @@
         }
 
         function zf_ShowErrorMsg(uniqName){
-            // Hide all error messages first
             var errorElements = document.querySelectorAll('.error-message');
             errorElements.forEach(function(elem) {
                 elem.style.display = 'none';
             });
             
-            // Show specific error message
             var linkName = uniqName.split('_')[0];
             var errorElement = document.getElementById(linkName + "_error");
             if (errorElement) {
@@ -614,47 +580,92 @@
             }
         }
 
-        // Submit directly to Zoho backend
         function submitToZohoDirectly() {
             const submitBtn = document.querySelector('.submit-btn');
             
-            // Visual feedback
             submitBtn.style.transform = 'scale(0.95)';
             submitBtn.innerHTML = '🌟 Submitting to Cosmos... 🌟';
             submitBtn.disabled = true;
             
-            // Create confetti effect
             createConfetti();
             
-            // Get form data
             const firstName = document.getElementById('Name_First').value;
             const lastName = document.getElementById('Name_Last').value;
             const email = document.getElementById('Email').value;
             
-            // Populate hidden form
-            document.getElementById('hidden_Name_First').value = firstName;
-            document.getElementById('hidden_Name_Last').value = lastName;
-            document.getElementById('hidden_Email').value = email;
+            // Create dynamic form with exact Zoho structure
+            const dynamicForm = document.createElement('form');
+            dynamicForm.method = 'POST';
+            dynamicForm.action = 'https://forms.canvigroup.com/canvigroup131/form/Test1/formperma/-N2i7qNxTtDjhu0-ZWtneOYCYTULqj6hQmzo0UZjB-w';
+            dynamicForm.target = 'hiddenIframe';
+            dynamicForm.style.display = 'none';
             
-            // Set referrer
-            document.getElementsByName('zf_referrer_name')[0].value = document.referrer;
+            // Hidden fields
+            const fields = [
+                { name: 'zf_referrer_name', value: document.referrer },
+                { name: 'zf_redirect_url', value: '' },
+                { name: 'zc_gad', value: '' }
+            ];
             
-            // Submit hidden form to Zoho
-            document.getElementById('hiddenZohoForm').submit();
+            fields.forEach(field => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = field.name;
+                input.value = field.value;
+                dynamicForm.appendChild(input);
+            });
             
-            // Show success animation immediately
+            // Name fields with complink structure
+            const firstNameInput = document.createElement('input');
+            firstNameInput.type = 'hidden';
+            firstNameInput.name = 'Name';
+            firstNameInput.setAttribute('complink', 'Name_First');
+            firstNameInput.value = firstName;
+            dynamicForm.appendChild(firstNameInput);
+            
+            const lastNameInput = document.createElement('input');
+            lastNameInput.type = 'hidden';
+            lastNameInput.name = 'Name';
+            lastNameInput.setAttribute('complink', 'Name_Last');
+            lastNameInput.value = lastName;
+            dynamicForm.appendChild(lastNameInput);
+            
+            // Email field
+            const emailInput = document.createElement('input');
+            emailInput.type = 'hidden';
+            emailInput.name = 'Email';
+            emailInput.value = email;
+            dynamicForm.appendChild(emailInput);
+            
+            // Submit form
+            document.body.appendChild(dynamicForm);
+            
+            console.log('Submitting form with data:', {
+                firstName: firstName,
+                lastName: lastName,
+                email: email
+            });
+            
+            dynamicForm.submit();
+            
+            // Clean up
+            setTimeout(() => {
+                if (document.body.contains(dynamicForm)) {
+                    document.body.removeChild(dynamicForm);
+                }
+            }, 1000);
+            
+            // Show success
             setTimeout(() => {
                 submitBtn.innerHTML = '✅ Submitted Successfully! ✅';
                 showSuccessAnimation();
                 
-                // Reset form after success
                 setTimeout(() => {
                     document.getElementById('cosmicForm').reset();
                     submitBtn.innerHTML = '🚀 Launch Into Space 🚀';
                     submitBtn.style.transform = 'scale(1)';
                     submitBtn.disabled = false;
                     
-                    // Reset input backgrounds
                     document.querySelectorAll('.input-field').forEach(input => {
                         input.style.background = 'rgba(255, 255, 255, 0.1)';
                     });
@@ -662,7 +673,6 @@
             }, 1000);
         }
 
-        // Create cosmic background stars
         function createStars() {
             const cosmicBg = document.getElementById('cosmicBg');
             for (let i = 0; i < 100; i++) {
@@ -677,7 +687,6 @@
             }
         }
 
-        // Create floating elements
         function createFloatingElements() {
             const container = document.getElementById('floatingElements');
             for (let i = 0; i < 15; i++) {
@@ -692,7 +701,6 @@
             }
         }
 
-        // Create particles
         function createParticles() {
             const container = document.getElementById('particles');
             for (let i = 0; i < 50; i++) {
@@ -705,7 +713,6 @@
             }
         }
 
-        // Input field interactions
         function setupInputInteractions() {
             document.querySelectorAll('.input-field').forEach(input => {
                 input.addEventListener('focus', function() {
@@ -729,7 +736,6 @@
             });
         }
 
-        // Show success animation
         function showSuccessAnimation() {
             const successAnimation = document.getElementById('successAnimation');
             successAnimation.style.display = 'flex';
@@ -739,7 +745,6 @@
             }, 4000);
         }
 
-        // Create confetti effect
         function createConfetti() {
             const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
             
@@ -766,17 +771,15 @@
             }
         }
 
-        // Initialize all effects and interactions
         function initializeCosmicForm() {
             createStars();
             createFloatingElements();
             createParticles();
             setupInputInteractions();
             
-            console.log('🚀 Cosmic Form with auto-submit initialized successfully!');
+            console.log('🚀 Cosmic Form with correct Zoho field names initialized!');
         }
 
-        // Initialize when DOM is loaded
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initializeCosmicForm);
         } else {
